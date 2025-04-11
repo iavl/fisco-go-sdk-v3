@@ -58,7 +58,7 @@ contract FileBoxV2 {
     /// @param userType user type
     /// @param admin admin address
     function addUser(address user, string memory userType, address admin) public {
-        require(_users[user].createdTimestamp == 0, "User already exists");
+        require(_users[user].createdTimestamp == 0 || _users[user].deleted, "User already exists");
 
         _users[user] = User({
             user: user,
