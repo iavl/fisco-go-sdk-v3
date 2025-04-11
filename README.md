@@ -102,41 +102,13 @@ import "github.com/FISCO-BCOS/go-sdk/v3/client"
 
 下面的内容作为一个示例进行使用介绍。
 
-1.提供一份简单的样例智能合约`HelloWorld.sol`如下:
-
-```solidity
-// SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.6.10 <0.8.20;
-
-contract HelloWorld {
-    string value;
-    event setValue(string v, address indexed from, address indexed to, int256 value);
-    int public version;
-
-    constructor(string memory initValue) {
-        value = initValue;
-        version = 0;
-    }
-
-    function get() public view returns (string memory) {
-        return value;
-    }
-
-    function set(string calldata v) public returns (string memory) {
-        string memory old = value;
-        value = v;
-        version = version + 1;
-        emit setValue(v, tx.origin, msg.sender, version);
-        return old;
-    }
-}
-```
+1.提供一份简单的样例智能合约　v3/examples/file_box_v2/FileBoxV2.so
 
 2.安装对应版本的[`solc`编译器](https://github.com/ethereum/solidity/releases/tag/v0.8.11)，目前FISCO BCOS默认的`solc`编译器版本为0.8.11。
 
 ```bash
 # 如果是国密则添加-g选项
-bash tools/download_solc.sh -v 0.8.11
+bash tools/download_solc.sh -v 0.8.11 -g
 ```
 
 3.构建`go-sdk`的代码生成工具`abigen`
@@ -149,18 +121,11 @@ cd ..
 cp v3/abigen .
 ```
 
-执行命令后，检查根目录下是否存在`abigen`，并将准备的智能合约`HelloWorld.sol`放置在一个新的目录下：
-
-```bash
-mkdir ./hello
-cp .ci/hello/HelloWorld.sol ./hello
-```
-
-4.编译生成go文件，先利用`solc`将合约文件生成`abi`和`bin`文件，以前面所提供的`HelloWorld.sol`为例：
+4.编译生成go文件，先利用`solc`将合约文件生成`abi`和`bin`文件，以`FileBoxV2.sol`为例：
 
 ```bash
 # 国密请使用 ./solc-0.8.11-gm --bin --abi -o ./hello ./hello/HelloWorld.sol
-./solc-0.8.11 --bin --abi -o ./hello ./hello/HelloWorld.sol
+./solc-0.8.11-gm --bin --abi -o v3/examples/file_box_v2 v3/examples/file_box_v2/FileBoxV2.sol
 ```
 
 在MacOS下运行`./solc-0.8.11`时如果出现找不到`libz3.dylib`的错误,例如:
@@ -177,27 +142,27 @@ dyld[42564]: Library not loaded: /opt/homebrew/opt/z3/lib/libz3.dylib
 brew installz3
 ```
 
-`HelloWorld.sol`目录下会生成`HelloWorld.bin`和`HelloWorld.abi`。此时利用`abigen`工具将`HelloWorld.bin`和`HelloWorld.abi`转换成`HelloWorld.go`：
+`FileBoxV2.sol`目录下会生成`FileBoxV2.bin`和`FileBoxV2.abi`。此时利用`abigen`工具将`FileBoxV2.bin`和`FileBoxV2.abi`转换成`FileBoxV2.go`：
 
 ```bash
 # 国密请使用 ./abigen --bin ./hello/HelloWorld.bin --abi ./hello/HelloWorld.abi --pkg hello --type HelloWorld --out ./hello/HelloWorld.go --smcrypto=true
 # 注意：国密模式，请使用国密solc编译得到bin
-./abigen --bin ./hello/HelloWorld.bin --abi ./hello/HelloWorld.abi --pkg hello --type HelloWorld --out ./hello/HelloWorld.go
+./abigen --bin v3/examples/file_box_v2/FileBoxV2.bin --abi v3/examples/file_box_v2/FileBoxV2.abi --pkg file_box_v2 --type FileBox --out v3/examples/file_box_v2/FileBoxV2.go
 ```
 
-最后hello目录下面存在以下文件：
+最后v3/examples/file_box_v2目录下面存在以下文件：
 
 ```bash
-HelloWorld.abi  HelloWorld.bin  HelloWorld.go  HelloWorld.sol
+FileBoxV2.abi  FileBoxV2.bin  FileBoxV2.go  FileBoxV2.sol
 ```
 
-5.调用生成的`HelloWorld.go`文件进行合约调用
+5.调用生成的`FileBoxV2.go`文件进行合约调用
 
 至此，合约已成功转换为go文件，用户可根据此文件在项目中利用SDK进行合约操作。具体的使用可参阅下一节。
 
 ### 部署智能合约
 
-下面的例子先部署合约，在部署过程中设置的`HelloWorld.sol`合约中有一个公开的名为`version`的全局变量，这种公开的成员将自动创建`getter`函数，然后调用`Version()`来获取version的值。
+下面的例子先部署合约，在部署过程中设置的`FileBoxV2.sol`合约中有一个公开的名为`version`的全局变量，这种公开的成员将自动创建`getter`函数，然后调用`Version()`来获取version的值。
 
 写入智能合约需要我们用私钥来对交易事务进行签名，我们创建的智能合约有一个名为`Set`的方法，它接受`string`类型的参数，然后将其设置为`value`，并且将`version`加1。
 
@@ -205,7 +170,7 @@ HelloWorld.abi  HelloWorld.bin  HelloWorld.go  HelloWorld.sol
 
 ```bash
 hello
-  ｜—— HelloWorld.go
+  ｜—— FileBoxV2.go
 go.mod
 go.sum
 hello_main.go
@@ -312,5 +277,5 @@ func main() {
 在项目目录下运行`hello_world.go`
 
 ```bash
-go run -ldflags="-r /usr/local/lib" hello_main.go
+go run -ldflags="-r ./lib" main.go
 ```
