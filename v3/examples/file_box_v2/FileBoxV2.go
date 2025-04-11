@@ -1,15 +1,15 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package main
+package filebox
 
 import (
 	"fmt"
 	"math/big"
 	"strings"
 
-	"github.com/iavl/fisco-go-sdk-v3/v3/abi"
-	"github.com/iavl/fisco-go-sdk-v3/v3/abi/bind"
+	"github.com/FISCO-BCOS/go-sdk/v3/abi"
+	"github.com/FISCO-BCOS/go-sdk/v3/abi/bind"
 	"github.com/FISCO-BCOS/go-sdk/v3/types"
 	"github.com/ethereum/go-ethereum/common"
 )

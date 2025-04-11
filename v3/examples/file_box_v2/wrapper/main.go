@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/FISCO-BCOS/go-sdk/v3/client"
+	filebox "github.com/FISCO-BCOS/go-sdk/v3/examples/file_box_v2"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("=================DeployFileBox===============")
-	address, receipt, _, err := DeployFileBox(client.GetTransactOpts(), client)
+	address, receipt, _, err := filebox.DeployFileBox(client.GetTransactOpts(), client)
 	if err != nil {
 		log.Fatal(err)
 	}

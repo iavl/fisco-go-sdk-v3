@@ -277,5 +277,5 @@ func main() {
 在项目目录下运行`hello_world.go`
 
 ```bash
-go run -ldflags="-r ./lib" main.go
+go run -ldflags="-r /usr/local/lib" main.go
 ```
